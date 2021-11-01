@@ -309,8 +309,9 @@ acr122s_build_frame(nfc_device *pnd,
     return false;
   if (data_size + should_prefix > 255)
     return false;
-  if (data == NULL)
-    return false;
+  // commented, see https://github.com/nfc-tools/libnfc/issues/660
+  //if (data == NULL)
+  //  return false;
 
   struct xfr_block_req *req = (struct xfr_block_req *) &frame[1];
   req->message_type = XFR_BLOCK_REQ_MSG;
@@ -490,7 +491,9 @@ acr122s_scan(const nfc_context *context, nfc_connstring connstrings[], const siz
 
       char version[32];
       int ret = acr122s_get_firmware_version(pnd, version, sizeof(version));
-      if (ret == 0 && strncmp("ACR122S", version, 7) != 0) {
+      // Add support for ACR122L
+      //if (ret == 0 && strncmp("ACR122S", version, 7) != 0) {
+      if (ret == 0 && strncmp("ACR122L310SAMA", version, 7) != 0) {
         ret = -1;
       }
 
@@ -629,8 +632,9 @@ acr122s_open(const nfc_context *context, const nfc_connstring connstring)
     acr122s_close(pnd);
     return NULL;
   }
-
-  if (strncmp(version, "ACR122S", 7) != 0) {
+  // Add support for ACR122L
+  //if (strncmp(version, "ACR122S", 7) != 0) {
+  if (strncmp(version, "ACR122L310SAMA", 7) != 0) {
     log_put(LOG_GROUP, LOG_CATEGORY, NFC_LOG_PRIORITY_ERROR, "Invalid firmware version: %s",
             version);
     acr122s_close(pnd);
